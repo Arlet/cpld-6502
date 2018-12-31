@@ -5,6 +5,13 @@
  * This file defines the board netlist, and also 
  * top level module for simulation 
  *
+ * Note that this top level doesn't have a RDY in the 
+ * interface list. This is because on my board, the RDY 
+ * comes out of the ABH module's memory selection.
+ *
+ * If you want, you can remove the RDY logic from the ABH,
+ * turn it into an input, and use external RDY signal.
+ *
  * (C) Arlet Ottens, <arlet@c-scape.nl>
  *
  */
