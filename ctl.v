@@ -235,16 +235,16 @@ always @* begin
     casez( IR )
         8'b0?1?_?110:                   alu_ci = C;             // ROL/ROR MEM 
         8'b110?_?110:                   alu_ci = 0;             // DEC (M + FF + 0 -> M)
-        8'b111?_?110:                   alu_ci = 1;   			// INC (M + 00 + 1 -> M)
-        8'b1100_1010:                   alu_ci = 0;   			// DEX (X + FF + 0 -> X)
-        8'b1000_1000:                   alu_ci = 0;   			// DEY (Y + FF + 0 -> Y)
-        8'b1110_1000:                   alu_ci = 1;   			// INX (X + 00 + 1 -> X)
-        8'b1100_1000:                   alu_ci = 1;   			// INY (Y + 00 + 1 -> Y)
-        8'b0?10_1010:                   alu_ci = C;   			// ROL/ROR A
-        8'b?11?_??01:                   alu_ci = C;   			// ADC/SBC
-        8'b110?_??01:                   alu_ci = 1;   			// CMP
-        8'b11??_??00:                   alu_ci = 1;   			// CPX/CPY
-        default:                        alu_ci = 0;   			// default is no carry
+        8'b111?_?110:                   alu_ci = 1;                     // INC (M + 00 + 1 -> M)
+        8'b1100_1010:                   alu_ci = 0;                     // DEX (X + FF + 0 -> X)
+        8'b1000_1000:                   alu_ci = 0;                     // DEY (Y + FF + 0 -> Y)
+        8'b1110_1000:                   alu_ci = 1;                     // INX (X + 00 + 1 -> X)
+        8'b1100_1000:                   alu_ci = 1;                     // INY (Y + 00 + 1 -> Y)
+        8'b0?10_1010:                   alu_ci = C;                     // ROL/ROR A
+        8'b?11?_??01:                   alu_ci = C;                     // ADC/SBC
+        8'b110?_??01:                   alu_ci = 1;                     // CMP
+        8'b11??_??00:                   alu_ci = 1;                     // CPX/CPY
+        default:                        alu_ci = 0;                     // default is no carry
     endcase
 end
 
@@ -261,21 +261,21 @@ always @* begin
     case( state )
         FETCH:          
             casez( IR )
-                8'b0110_1000:           load_n_alu = 1; 		// pla
-                8'b0???_??01:           load_n_alu = 1; 		// ora/and/eor/adc
-                8'b101?_??01:           load_n_alu = 1; 		// lda
-                8'b11??_??01:           load_n_alu = 1; 		// cmp/sbc
-                8'b1010_00?0:           load_n_alu = 1; 		// ldx/ldy imm
-                8'b101?_?1?0:           load_n_alu = 1; 		// ldx/ldy abs/zp
-                8'b11?0_0000:           load_n_alu = 1; 		// cpx/cpy imm
-                8'b11??_?100:           load_n_alu = 1; 		// cpx/cpy
+                8'b0110_1000:           load_n_alu = 1;                 // pla
+                8'b0???_??01:           load_n_alu = 1;                 // ora/and/eor/adc
+                8'b101?_??01:           load_n_alu = 1;                 // lda
+                8'b11??_??01:           load_n_alu = 1;                 // cmp/sbc
+                8'b1010_00?0:           load_n_alu = 1;                 // ldx/ldy imm
+                8'b101?_?1?0:           load_n_alu = 1;                 // ldx/ldy abs/zp
+                8'b11?0_0000:           load_n_alu = 1;                 // cpx/cpy imm
+                8'b11??_?100:           load_n_alu = 1;                 // cpx/cpy
             endcase
         
         DECODE:         
             casez( IR )
-                8'b0???_1010:           load_n_alu = 1; 		// rol A
-                8'b1?00_10?0:           load_n_alu = 1; 		// dey/txa/iny/dex
-                8'b1010_10?0:           load_n_alu = 1; 		// tax/tay
+                8'b0???_1010:           load_n_alu = 1;                 // rol A
+                8'b1?00_10?0:           load_n_alu = 1;                 // dey/txa/iny/dex
+                8'b1010_10?0:           load_n_alu = 1;                 // tax/tay
                 8'b1001_1000:           load_n_alu = 1; 
                 8'b1011_1010:           load_n_alu = 1;
                 8'b1110_1000:           load_n_alu = 1;
@@ -310,14 +310,14 @@ always @* begin
         DATA:   
             if( !WE ) 
             casez( IR ) 
-                8'b0???_?110:           load_c_alu = 1; 		// shift mem
+                8'b0???_?110:           load_c_alu = 1;                 // shift mem
             endcase
 
         FETCH:  
             casez( IR ) 
-                8'b011?_??01:           load_c_alu = 1; 		// ADC
-                8'b11??_??01:           load_c_alu = 1; 		// CMP/SBC
-                8'b11?0_??00:           load_c_alu = 1; 		// CPX/CPY
+                8'b011?_??01:           load_c_alu = 1;                 // ADC
+                8'b11??_??01:           load_c_alu = 1;                 // CMP/SBC
+                8'b11?0_??00:           load_c_alu = 1;                 // CPX/CPY
             endcase
     endcase
 end
@@ -390,16 +390,16 @@ always @(posedge clk)
 
         ABS0:              
             casez( IR )
-                8'b100?_????:           WE <= 0;        		// all STA/STX/STY 
+                8'b100?_????:           WE <= 0;                        // all STA/STX/STY 
                 default:                WE <= 1;
             endcase
 
         DECODE:
             casez( IR )
-                8'b00?0_0000:           WE <= 0;        		// JSR, BRK
-                8'b0?00_1000:           WE <= 0;        		// PHA/PHP
-                8'b?101_1010:           WE <= 0;        		// PHX/PHY
-                8'b100?_01??:           WE <= 0;        		// STA/STX/STY ZP[,X]
+                8'b00?0_0000:           WE <= 0;                        // JSR, BRK
+                8'b0?00_1000:           WE <= 0;                        // PHA/PHP
+                8'b?101_1010:           WE <= 0;                        // PHX/PHY
+                8'b100?_01??:           WE <= 0;                        // STA/STX/STY ZP[,X]
                 default:                WE <= 1;
             endcase                 
 
@@ -418,27 +418,27 @@ always @* begin
     case( state )
         DECODE: 
             casez( IR )
-                8'b????_01??:           ab_op = AB_ZPXY;    	// only use SB here
+                8'b????_01??:           ab_op = AB_ZPXY;        // only use SB here
                 8'b????_0001:           ab_op = AB_ZPXY;
-                8'b0100_0000:           ab_op = AB_PLA;     	// RTI
-                8'b0110_0000:           ab_op = AB_PLA;     	// RTS
-                8'b0010_1000:           ab_op = AB_PLA;     	// PLP
-                8'b0110_1000:           ab_op = AB_PLA;     	// PLA
-                8'b?111_1010:           ab_op = AB_PLA;     	// PLX/PLY
-                8'b0000_0000:           ab_op = take_irq ? AB_PHA : AB_BRK;     	// IRQ
-                8'b0010_0000:           ab_op = AB_BRK;     	// JSR
-                8'b0000_1000:           ab_op = AB_PHA;     	// PHP
-                8'b0100_1000:           ab_op = AB_PHA;     	// PHA
-                8'b?101_1010:           ab_op = AB_PHA;     	// PHX/PHY
+                8'b0100_0000:           ab_op = AB_PLA;         // RTI
+                8'b0110_0000:           ab_op = AB_PLA;         // RTS
+                8'b0010_1000:           ab_op = AB_PLA;         // PLP
+                8'b0110_1000:           ab_op = AB_PLA;         // PLA
+                8'b?111_1010:           ab_op = AB_PLA;         // PLX/PLY
+                8'b0000_0000:           ab_op = take_irq ? AB_PHA : AB_BRK;             // IRQ
+                8'b0010_0000:           ab_op = AB_BRK;         // JSR
+                8'b0000_1000:           ab_op = AB_PHA;         // PHP
+                8'b0100_1000:           ab_op = AB_PHA;         // PHA
+                8'b?101_1010:           ab_op = AB_PHA;         // PHX/PHY
                 8'b1001_1010:           ab_op = AB_TXS;
                 default:                ab_op = take_irq & load_ir ? AB_IRQ0 : AB_FETCH;
             endcase
 
         STK0:               
             casez( IR )
-                8'b?1??_0???:           ab_op = AB_RTS0;    	// RTS/RTI
-                8'b?0??_0???:           ab_op = AB_JSR0;    	// JSR/BRK
-                8'b????_1???:           ab_op = AB_DATA;    	// PHA/PHA/PLA/PLP
+                8'b?1??_0???:           ab_op = AB_RTS0;        // RTS/RTI
+                8'b?0??_0???:           ab_op = AB_JSR0;        // JSR/BRK
+                8'b????_1???:           ab_op = AB_DATA;        // PHA/PHA/PLA/PLP
             endcase
         
         STK1:
@@ -481,7 +481,7 @@ always @(posedge clk)
                 8'b0??0_?000:           state <= STK0;          // BRK,JSR,RTI,RTS,PLA,PHA,PLP,PHP
                 8'b1000_0000:           state <= BRA0;          // BRA
                 8'b???1_0000:           state <= cond_true ? BRA0: FETCH;        // odd column 0
-                8'b????_0001: 	        state <= INDX0;         // column 1 = (ZP,X) or (ZP),Y
+                8'b????_0001:           state <= INDX0;         // column 1 = (ZP,X) or (ZP),Y
                 8'b1??0_00?0:           state <= FETCH;         // LDY#,CPY#,CPX#,LDX#
                 8'b????_01??:           state <= DATA;          // column 4567 (ZP [+index])
                 8'b???0_1001:           state <= FETCH;         // even column 9 (IMM)
@@ -516,15 +516,15 @@ always @(posedge clk)
 
 always @*
     casez( IR[7:4] )
-        4'b000?:                        cond_true = ~N;     	// BPL
-        4'b001?:                        cond_true = N;      	// BMI
-        4'b010?:                        cond_true = ~V;     	// BVC
-        4'b011?:                        cond_true = V;      	// BVS
-        4'b1000:                        cond_true = 1;      	// BRA
-        4'b1001:                        cond_true = ~C;     	// BCC
-        4'b101?:                        cond_true = C;      	// BCS
-        4'b110?:                        cond_true = ~Z;     	// BNE
-        4'b111?:                        cond_true = Z;      	// BEQ
+        4'b000?:                        cond_true = ~N;         // BPL
+        4'b001?:                        cond_true = N;          // BMI
+        4'b010?:                        cond_true = ~V;         // BVC
+        4'b011?:                        cond_true = V;          // BVS
+        4'b1000:                        cond_true = 1;          // BRA
+        4'b1001:                        cond_true = ~C;         // BCC
+        4'b101?:                        cond_true = C;          // BCS
+        4'b110?:                        cond_true = ~Z;         // BNE
+        4'b111?:                        cond_true = Z;          // BEQ
     endcase
 
 endmodule

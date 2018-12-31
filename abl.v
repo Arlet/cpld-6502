@@ -128,10 +128,10 @@ always @(*)
     case( op )
         AB_ABS0   :                     use_sb = 1; 
         AB_BRA0   :                     use_sb = 1;
-        AB_INDX0  : 					use_sb = 1;
-        AB_INDX1  : 					use_sb = 1;
-        AB_ZPXY   : 					use_sb = 1;
-    default: 					        use_sb = 0;
+        AB_INDX0  :                                     use_sb = 1;
+        AB_INDX1  :                                     use_sb = 1;
+        AB_ZPXY   :                                     use_sb = 1;
+    default:                                            use_sb = 0;
     endcase
 
 /* 
