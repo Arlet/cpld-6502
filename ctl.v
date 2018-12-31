@@ -98,11 +98,11 @@ always @(posedge clk)
     if( RDY )
         if( state == DECODE )
             casez( IR )
-                8'b0???_?110:               rmw <= 1;           // shift memory
-                8'b11??_?110:               rmw <= 1;           // INC/DEC
-                default:                    rmw <= 0;
+                8'b0???_?110:           rmw <= 1;               // shift memory
+                8'b11??_?110:           rmw <= 1;               // INC/DEC
+                default:                rmw <= 0;
             endcase
-        else if( state == DATA )            rmw <= 0;
+        else if( state == DATA )        rmw <= 0;
 
 /*
  * ind is used for indirect access
@@ -111,11 +111,11 @@ always @(posedge clk)
     if( RDY )
         if( state == DECODE )
             casez( IR )
-                8'b??0?_0000:               ind <= 1;           // BRK
-                8'b0110_??00:               ind <= 1;           // JMP (a)
-                default:                    ind <= 0;
+                8'b??0?_0000:           ind <= 1;               // BRK
+                8'b0110_??00:           ind <= 1;               // JMP (a)
+                default:                ind <= 0;
             endcase
-        else if( state == IND0 )            ind <= 0;           // prevent multiple indirections
+        else if( state == IND0 )        ind <= 0;               // prevent multiple indirections
 
 always @* begin
     jmp = 0;
@@ -235,16 +235,16 @@ always @* begin
     casez( IR )
         8'b0?1?_?110:                   alu_ci = C;             // ROL/ROR MEM 
         8'b110?_?110:                   alu_ci = 0;             // DEC (M + FF + 0 -> M)
-        8'b111?_?110:                   alu_ci = 1;                     // INC (M + 00 + 1 -> M)
-        8'b1100_1010:                   alu_ci = 0;                     // DEX (X + FF + 0 -> X)
-        8'b1000_1000:                   alu_ci = 0;                     // DEY (Y + FF + 0 -> Y)
-        8'b1110_1000:                   alu_ci = 1;                     // INX (X + 00 + 1 -> X)
-        8'b1100_1000:                   alu_ci = 1;                     // INY (Y + 00 + 1 -> Y)
-        8'b0?10_1010:                   alu_ci = C;                     // ROL/ROR A
-        8'b?11?_??01:                   alu_ci = C;                     // ADC/SBC
-        8'b110?_??01:                   alu_ci = 1;                     // CMP
-        8'b11??_??00:                   alu_ci = 1;                     // CPX/CPY
-        default:                        alu_ci = 0;                     // default is no carry
+        8'b111?_?110:                   alu_ci = 1;             // INC (M + 00 + 1 -> M)
+        8'b1100_1010:                   alu_ci = 0;             // DEX (X + FF + 0 -> X)
+        8'b1000_1000:                   alu_ci = 0;             // DEY (Y + FF + 0 -> Y)
+        8'b1110_1000:                   alu_ci = 1;             // INX (X + 00 + 1 -> X)
+        8'b1100_1000:                   alu_ci = 1;             // INY (Y + 00 + 1 -> Y)
+        8'b0?10_1010:                   alu_ci = C;             // ROL/ROR A
+        8'b?11?_??01:                   alu_ci = C;             // ADC/SBC
+        8'b110?_??01:                   alu_ci = 1;             // CMP
+        8'b11??_??00:                   alu_ci = 1;             // CPX/CPY
+        default:                        alu_ci = 0;             // default is no carry
     endcase
 end
 
@@ -261,21 +261,21 @@ always @* begin
     case( state )
         FETCH:          
             casez( IR )
-                8'b0110_1000:           load_n_alu = 1;                 // pla
-                8'b0???_??01:           load_n_alu = 1;                 // ora/and/eor/adc
-                8'b101?_??01:           load_n_alu = 1;                 // lda
-                8'b11??_??01:           load_n_alu = 1;                 // cmp/sbc
-                8'b1010_00?0:           load_n_alu = 1;                 // ldx/ldy imm
-                8'b101?_?1?0:           load_n_alu = 1;                 // ldx/ldy abs/zp
-                8'b11?0_0000:           load_n_alu = 1;                 // cpx/cpy imm
-                8'b11??_?100:           load_n_alu = 1;                 // cpx/cpy
+                8'b0110_1000:           load_n_alu = 1;         // pla
+                8'b0???_??01:           load_n_alu = 1;         // ora/and/eor/adc
+                8'b101?_??01:           load_n_alu = 1;         // lda
+                8'b11??_??01:           load_n_alu = 1;         // cmp/sbc
+                8'b1010_00?0:           load_n_alu = 1;         // ldx/ldy imm
+                8'b101?_?1?0:           load_n_alu = 1;         // ldx/ldy abs/zp
+                8'b11?0_0000:           load_n_alu = 1;         // cpx/cpy imm
+                8'b11??_?100:           load_n_alu = 1;         // cpx/cpy
             endcase
         
         DECODE:         
             casez( IR )
-                8'b0???_1010:           load_n_alu = 1;                 // rol A
-                8'b1?00_10?0:           load_n_alu = 1;                 // dey/txa/iny/dex
-                8'b1010_10?0:           load_n_alu = 1;                 // tax/tay
+                8'b0???_1010:           load_n_alu = 1;         // rol A
+                8'b1?00_10?0:           load_n_alu = 1;         // dey/txa/iny/dex
+                8'b1010_10?0:           load_n_alu = 1;         // tax/tay
                 8'b1001_1000:           load_n_alu = 1; 
                 8'b1011_1010:           load_n_alu = 1;
                 8'b1110_1000:           load_n_alu = 1;
@@ -310,14 +310,14 @@ always @* begin
         DATA:   
             if( !WE ) 
             casez( IR ) 
-                8'b0???_?110:           load_c_alu = 1;                 // shift mem
+                8'b0???_?110:           load_c_alu = 1;           // shift mem
             endcase
 
         FETCH:  
             casez( IR ) 
-                8'b011?_??01:           load_c_alu = 1;                 // ADC
-                8'b11??_??01:           load_c_alu = 1;                 // CMP/SBC
-                8'b11?0_??00:           load_c_alu = 1;                 // CPX/CPY
+                8'b011?_??01:           load_c_alu = 1;           // ADC
+                8'b11??_??01:           load_c_alu = 1;           // CMP/SBC
+                8'b11?0_??00:           load_c_alu = 1;           // CPX/CPY
             endcase
     endcase
 end
@@ -390,16 +390,16 @@ always @(posedge clk)
 
         ABS0:              
             casez( IR )
-                8'b100?_????:           WE <= 0;                        // all STA/STX/STY 
+                8'b100?_????:           WE <= 0;                // all STA/STX/STY 
                 default:                WE <= 1;
             endcase
 
         DECODE:
             casez( IR )
-                8'b00?0_0000:           WE <= 0;                        // JSR, BRK
-                8'b0?00_1000:           WE <= 0;                        // PHA/PHP
-                8'b?101_1010:           WE <= 0;                        // PHX/PHY
-                8'b100?_01??:           WE <= 0;                        // STA/STX/STY ZP[,X]
+                8'b00?0_0000:           WE <= 0;                // JSR, BRK
+                8'b0?00_1000:           WE <= 0;                // PHA/PHP
+                8'b?101_1010:           WE <= 0;                // PHX/PHY
+                8'b100?_01??:           WE <= 0;                // STA/STX/STY ZP[,X]
                 default:                WE <= 1;
             endcase                 
 

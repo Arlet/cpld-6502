@@ -82,12 +82,12 @@ always @*
     else                                RAM = 1;        
 
 always @* 
-    if( !ABH[7] )                               ROM = 1;        // ignore bottom half
-    else if( ABH == 8'hCF )                     ROM = 1;        // don't write to CFxx
-    else if( !WE )                              ROM = 0;        // always write to rest (shadow) Flash
-    else if( ABH == 8'hFF )                     ROM = !map_rom; // don't read from top page 
-    else if( ABH <= 8'hCF )                     ROM = 1;        // don't read from 0000-CFFFF
-    else                                        ROM = 0;        // do read from D000-FEFF
+    if( !ABH[7] )                       ROM = 1;        // ignore bottom half
+    else if( ABH == 8'hCF )             ROM = 1;        // don't write to CFxx
+    else if( !WE )                      ROM = 0;        // always write to rest (shadow) Flash
+    else if( ABH == 8'hFF )             ROM = !map_rom; // don't read from top page 
+    else if( ABH <= 8'hCF )             ROM = 1;        // don't read from 0000-CFFFF
+    else                                ROM = 0;        // do read from D000-FEFF
 
 assign DB = write_pch ? PCH : 8'hZZ;
 
@@ -127,32 +127,32 @@ always @* begin
     sel = 0;
     case( op )
         AB_INDX0    :                   sel = 0;
-        AB_ZPXY         :                                       sel = 0;
-        AB_PLA          :                                       sel = 1;
-        AB_RTS0         :                                       sel = 1;
-        AB_PHA          :                                       sel = 1;
-        AB_BRK      :                                   sel = 1;
-        AB_BRK1         :                                       sel = 1;
-        AB_JSR0         :                                       sel = 1;
-        AB_JMP0         :                                       sel = 2;
-        AB_RTS1         :                                       sel = 2;  
-        AB_INDX1    :                                   sel = 2;
-        AB_ABS0         :                                       sel = 2;
-        AB_DATA         :                                       sel = 3;
-        AB_IRQ0     :                                   sel = 3;
-        AB_FETCH    :                                   sel = 3;
-        AB_JSR1         :                                       sel = 3;
-        AB_TXS      :                                   sel = 3;  // check these
-        AB_IND0     :                                   sel = 3;
-        AB_BRA0         : if( SB7 & ~CI )       sel = 6; // backwards and no carry
+        AB_ZPXY     :                   sel = 0;
+        AB_PLA      :                   sel = 1;
+        AB_RTS0     :                   sel = 1;
+        AB_PHA      :                   sel = 1;
+        AB_BRK      :                   sel = 1;
+        AB_BRK1     :                   sel = 1;
+        AB_JSR0     :                   sel = 1;
+        AB_JMP0     :                   sel = 2;
+        AB_RTS1     :                   sel = 2;  
+        AB_INDX1    :                   sel = 2;
+        AB_ABS0     :                   sel = 2;
+        AB_DATA     :                   sel = 3;
+        AB_IRQ0     :                   sel = 3;
+        AB_FETCH    :                   sel = 3;
+        AB_JSR1     :                   sel = 3;
+        AB_TXS      :                   sel = 3;  // check these
+        AB_IND0     :                   sel = 3;
+        AB_BRA0     : if( SB7 & ~CI )   sel = 6; // backwards and no carry
                       else if( ~SB7 & CI )
                                         sel = 6; // forwards and carry 
                       else              sel = 3; 
-        AB_RST      :                                   sel = 4;
-        AB_NMI      :                                   sel = 4;
-        AB_BRK2         :                                       sel = 4;
+        AB_RST      :                   sel = 4;
+        AB_NMI      :                   sel = 4;
+        AB_BRK2     :                   sel = 4;
 
-    default:                                            sel = 0;
+    default:                            sel = 0;
     endcase
 end
 
@@ -167,12 +167,12 @@ always @(posedge clk)
     if( RDY2 & load_abh )
     case( sel )
         0   :                           ABH <= 0;           // zero page
-        1       :                                                   ABH <= 1;           // stack
-        2       :                                                   ABH <= DB_CI;       // DB + Carry In
-        3   :                                               ABH <= PCH;         // program counter
-        4   :                                               ABH <= 8'hff;       // vectors
-        5   :                                               ABH <= 0;           // don't care
-        6   :                                       ABH <= PCB;         // PC after branch
+        1   :                           ABH <= 1;           // stack
+        2   :                           ABH <= DB_CI;       // DB + Carry In
+        3   :                           ABH <= PCH;         // program counter
+        4   :                           ABH <= 8'hff;       // vectors
+        5   :                           ABH <= 0;           // don't care
+        6   :                           ABH <= PCB;         // PC after branch
     endcase
 
 /*

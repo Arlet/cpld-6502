@@ -109,14 +109,14 @@ assign SB = ~SB_DIR  ? AI  : 8'hzz;
  */
 always @*
     case( sel )
-        SEL_0  :                                                AI = 0;
-        SEL_MEM:                                                AI = M;
-        SEL_CMP:                                                AI = A;
-        SEL_ADD:                                                AI = A;
-        SEL_CPX:                                                AI = X;
-        SEL_INX:                                                AI = X;
-        SEL_CPY:                                                AI = Y;
-        SEL_INY:                                                AI = Y;
+        SEL_0  :                        AI = 0;
+        SEL_MEM:                        AI = M;
+        SEL_CMP:                        AI = A;
+        SEL_ADD:                        AI = A;
+        SEL_CPX:                        AI = X;
+        SEL_INX:                        AI = X;
+        SEL_CPY:                        AI = Y;
+        SEL_INY:                        AI = Y;
     endcase
 
 /*
@@ -144,12 +144,12 @@ always @*
     case( op )
         OP_AI :                         OUT = SB;
         OP_ROL:                         OUT = {SB[6:0], CI};   // ROL
-        OP_ROR:                                                 OUT = {CI, SB[7:1]};   // ROR
-        OP_ORA:                                                 OUT = SB | BI;         // ORA
-        OP_AND:                                                 OUT = SB & BI;         // AND
-        OP_EOR:                                                 OUT = SB ^ BI;         // EOR
-        OP_ADC:                                                 OUT = SB ^ BI;         // ADC/SBC
-        OP_BCD:                                                 OUT = SB ^ BI;         // BCD 
+        OP_ROR:                         OUT = {CI, SB[7:1]};   // ROR
+        OP_ORA:                         OUT = SB | BI;         // ORA
+        OP_AND:                         OUT = SB & BI;         // AND
+        OP_EOR:                         OUT = SB ^ BI;         // EOR
+        OP_ADC:                         OUT = SB ^ BI;         // ADC/SBC
+        OP_BCD:                         OUT = SB ^ BI;         // BCD 
     endcase
 
 assign LSB = OUT[3:0] ^ { C3, C2, C1, C0 };
