@@ -1,5 +1,12 @@
 /*
- * address bus low : handles lower 8 bits of address bus
+ * address bus low : handles lower 8 bits of address bus. 
+ * 
+ * The actions are determined by the 'op' input from the control
+ * logic. We have 5 bits for control, with some AB_* defines
+ * named after typical usage (but not necessarily uniquely used
+ * for that purpose), for example AB_RMW refers to a read-modify-
+ * write cycle, but really it is just an operation that holds the
+ * previous address.
  *
  * (C) Arlet Ottens <arlet@c-scape.nl>
  */
@@ -108,19 +115,27 @@ always @(*)
     endcase
 
 /*
- * adjust stack pointer
+ * adjust stack pointer. If load_spl, then we load
+ * the stack pointer from the special bus (which presumably
+ * outputs the X register).
+ *
+ * Otherwise increment/decrement for pull/push
  */
 always @(posedge clk)
     if( RDY )
         if( load_spl )                  SPL <= SB;
         else case( op )
-            AB_RTS0, AB_PLA:            SPL <= SPL + 1;
-            AB_BRK, AB_BRK1, 
-            AB_JSR0, AB_PHA :           SPL <= SPL - 1;
+            AB_RTS0, 
+            AB_PLA:                     SPL <= SPL + 1;
+
+            AB_BRK, 
+            AB_BRK1, 
+            AB_JSR0, 
+            AB_PHA :                    SPL <= SPL - 1;
         endcase
 
 /*
- * determine 'use_sb' signal. This siganl indicates 
+ * determine 'use_sb' signal. This signal indicates 
  * whether the 'SB' input needs to be added to base 
  * value.
  */
@@ -191,6 +206,10 @@ always @(posedge clk)
  * update PCL (program counter low). Normally we use
  * current ABL + 1, but during interrupts (not BRK)
  * don't increment.
+ *
+ * Note that clock is updated on falling edge, so we 
+ * can take the previously calculated address from
+ * the register.
  */
 always @(negedge clk)
     if( RDY )

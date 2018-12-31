@@ -29,6 +29,16 @@ The 4 parts are:
           Because this module needs the fewest pins and resources, it can also do some 
           board specific work as clock divider and chip select (and maybe some I/O).
 
-The cpu.v module shows the interconnections.
+The cpu.v module shows the interconnections. This project also includes an IO module with very
+simple UART and SPI peripheral that may be useful.
+
+Note: for purpose of minimizing design, I did not keep the original cycle count. Instead, some
+of the dead cycles were removed.
+
+    - implied instructions only take a single cycle (except for PHx/PLx which take 3). 
+    - ZP, X takes 3 cycles (same as ZP). The X offset is added at the same time.
+    - Instructions that pull from stack don't require extra cycle to adjust stack pointer.
+    - no penalty for page boundary crossing.
+    - no wasted cycle to increment PC in RTS.
 
 Have fun. 
