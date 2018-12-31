@@ -94,6 +94,11 @@ wire do_bit = state == DATA && (IR == 8'h24 || IR == 8'h2c);
 wire pull = IR[3] ? IR[5]: IR[6];
 assign DB = write_p ? P: 8'hzz;
 
+/*
+ * rmw is set when doing a read-modify-write instruction. In those
+ * instructions, we stay in DATA state for extra cycle to write back 
+ * the result.
+ */
 always @(posedge clk)
     if( RDY )
         if( state == DECODE )
@@ -105,7 +110,8 @@ always @(posedge clk)
         else if( state == DATA )        rmw <= 0;
 
 /*
- * ind is used for indirect access
+ * ind is used for indirect access. These are initially treated as ABS
+ * addressing, but then the result is treated as 2nd ABS address. 
  */
 always @(posedge clk)
     if( RDY )
@@ -117,6 +123,9 @@ always @(posedge clk)
             endcase
         else if( state == IND0 )        ind <= 0;               // prevent multiple indirections
 
+/*
+ * set 'jmp' for anything that needs to write PC in ABS0 state
+ */
 always @* begin
     jmp = 0;
     casez( IR )
@@ -125,6 +134,12 @@ always @* begin
     endcase
 end
 
+/*
+ * ALU input selection. Selects both AI/BI inputs of the ALU, as well as the
+ * value to send to SB for address calculations. Note that in the BRA0 state, we
+ * send DB value over SB, even though ABL module has access to DB. This reduces the
+ * muxing we need to do.
+ */
 always @* begin
     alu_sel = SEL_0;
     case( state )
@@ -175,6 +190,9 @@ always @* begin
     endcase
 end
 
+/*
+ * select ALU operation
+ */
 always @* 
     casez( IR )
         8'b?1?1_1010:                   alu_op = OP_AI;         // PHX/PHY/PLX/PLY
@@ -191,6 +209,10 @@ always @*
              default:                   alu_op = OP_AI;         // nothing
     endcase
 
+/*
+ * select ALU load operation. We can load result in X, A, Y, or store it
+ * to memory
+ */
 always @* begin
     alu_ld = 0;
     case( state )
@@ -229,7 +251,7 @@ always @* begin
 end
 
 /*
- * ALU CI selection
+ * ALU CI (carry input) selection
  */
 always @* begin
     casez( IR )
@@ -248,6 +270,11 @@ always @* begin
     endcase
 end
 
+/*
+ * control signal to determine if we need to update Z flag with
+ * ALU result in this cycle. It is the same as for the N flag, except
+ * for the BIT instruction, where the N flag comes from DB[7] instead.
+ */
 always @* begin
     load_z_alu = load_n_alu;
     if( state == FETCH )
@@ -256,6 +283,10 @@ always @* begin
         endcase
 end
 
+/*
+ * control signal to determine if we need to update N flag with
+ * ALU result in this cycle. 
+ */
 always @* begin
     load_n_alu = 0;
     case( state )
@@ -289,6 +320,10 @@ always @* begin
     endcase
 end
 
+/*
+ * control signal to determine if we need to update N flag with
+ * ALU result in this cycle.  Only true for ADC/SBC.
+ */
 always @* begin
     load_v_alu = 0;
     case( state )
@@ -299,6 +334,10 @@ always @* begin
     endcase
 end
 
+/*
+ * control signal to determine if we need to update C flag with
+ * ALU result in this cycle.
+ */
 always @* begin
     load_c_alu = 0;
     case( state )
@@ -321,6 +360,10 @@ always @* begin
             endcase
     endcase
 end
+
+/*
+ * Update the flags
+ */
 
 always @(posedge clk)
     if( RDY )
@@ -356,10 +399,21 @@ always @(posedge clk)
         else if( load_c_alu )           C <= alu_co;
         else if( clc_sec )              C <= IR[5];
 
+/*
+ * remember we saw a RST signal so we don't get 
+ * confused by glitches, but always complete a full
+ * sequence
+ */
+
 always @(posedge clk)
     if( RDY )
         if( !RST )                      rst <= 1;
         else if( state == STK2 )        rst <= 0;
+
+/*
+ * control signal to indicate if we need to load IR (instruction register)
+ * in this cycle
+ */
 
 always @* begin
     load_ir = 0; 
@@ -376,10 +430,13 @@ always @* begin
     endcase
 end
 
+/*
+ * update IR (instruction register)
+ */
 always @(posedge clk)
     if( RDY & load_ir )
         if( rst | take_irq )            IR <= 0;
-        else if( load_ir == 1 )         IR <= DB;
+        else if( load_ir )              IR <= DB;
 
 /*
  * !WE signal
@@ -471,6 +528,10 @@ always @* begin
     endcase
 end
 
+/*
+ * instruction decoding/state machine
+ */
+
 always @(posedge clk)
     if( RDY )
     if( !RST )                          state <= FETCH;
@@ -513,6 +574,10 @@ always @(posedge clk)
             else if( jmp )              state <= FETCH;
             else                        state <= DATA;
     endcase
+
+/*
+ * condition codes
+ */
 
 always @*
     casez( IR[7:4] )

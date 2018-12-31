@@ -85,13 +85,19 @@ wire [7:0] AB = AI & BI;
 
 /*
  * intermediate carry bits. Intermediate results
- * will be optimized away.
+ * will be optimized away. Note extra 'is_adc' term
+ * ensures that carry bits are cleared when doing
+ * logic operations.
  */
 wire C0 = is_adc & CI;
 wire C1 = is_adc & (AB[0] | (OUT[0] & C0));
 wire C2 = is_adc & (AB[1] | (OUT[1] & C1));
 wire C3 = is_adc & (AB[2] | (OUT[2] & C2));
 wire C4 = is_adc & (AB[3] | (OUT[3] & C3));
+
+/* 
+ * Half-Carry bit, also set when lower nibble exceeds decimal 9
+ */
 
 wire HC = C4 | (is_bcd & is_add & (LSD >= 10));
 
@@ -100,9 +106,22 @@ wire C6 = is_adc & (AB[5] | (OUT[5] & C5));
 wire C7 = is_adc & (AB[6] | (OUT[6] & C6));
 wire C8 = is_adc & (AB[7] | (OUT[7] & C7));
 
+/* 
+ * decimal carry it, also set when higher nibble exceeds decimal 9
+ * (hence the name C9)
+ */
+
 wire C9 = C8 | (is_bcd & is_add & (MSD >= 10));
 
+/*
+ * Databus output when doing memory load
+ */
 assign DB = op_ld[2] ? { MSD, LSD } : 8'hzz;
+
+/*
+ * Special Bus usually outputs AI, for address indexing purposes, 
+ * but can be turned to input for TSX instruction.
+ */
 assign SB = ~SB_DIR  ? AI  : 8'hzz;
 
 /*
