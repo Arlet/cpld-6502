@@ -163,6 +163,7 @@ always @* begin
             casez( IR )
                 8'b1?0?_1000:           alu_sel = SEL_INY;      // DEY/INY/TYA
                 8'b111?_1000:           alu_sel = SEL_INX;      // INX
+                8'b00?1_1010:           alu_sel = SEL_0;        // INC/DEC A
                 8'b1?0?_1010:           alu_sel = SEL_INX;      // TXA/TXS/DEX
                 8'b1010_10?0:           alu_sel = SEL_CMP;      // TAX/TAY
                 8'b0???_1010:           alu_sel = SEL_CMP;      // shift A
@@ -204,6 +205,7 @@ always @*
         8'b000?_??01:                   alu_op = OP_ORA;        // ORA
         8'b001?_??01:                   alu_op = OP_AND;        // AND 
         8'b010?_??01:                   alu_op = OP_EOR;        // EOR 
+        8'b00?1_1010:                   alu_op = OP_ADC;        // INC/DEC A
         8'b01??_??10:                   alu_op = OP_ROR;        // ROR
         8'b00??_??10:                   alu_op = OP_ROL;        // ROL
              default:                   alu_op = OP_AI;         // nothing
@@ -228,7 +230,7 @@ always @* begin
             casez( IR )
                 8'b1000_1010:           alu_ld = LD_A;          // TXA
                 8'b1001_1000:           alu_ld = LD_A;          // TYA
-                8'b0???_1010:           alu_ld = LD_A;          // shift A
+                8'b0???_1010:           alu_ld = LD_A;          // shift A/INC/DEC A
                 8'b101?_1010:           alu_ld = LD_X;          // TAX/TSX
                 8'b110?_1010:           alu_ld = LD_X;          // DEX
                 8'b1110_1000:           alu_ld = LD_X;          // INX
@@ -262,6 +264,8 @@ always @* begin
         8'b1000_1000:                   alu_ci = 0;             // DEY (Y + FF + 0 -> Y)
         8'b1110_1000:                   alu_ci = 1;             // INX (X + 00 + 1 -> X)
         8'b1100_1000:                   alu_ci = 1;             // INY (Y + 00 + 1 -> Y)
+        8'b0001_1010:                   alu_ci = 1;             // INC A
+        8'b0011_1010:                   alu_ci = 0;             // DEC A
         8'b0?10_1010:                   alu_ci = C;             // ROL/ROR A
         8'b?11?_??01:                   alu_ci = C;             // ADC/SBC
         8'b110?_??01:                   alu_ci = 1;             // CMP
@@ -343,7 +347,7 @@ always @* begin
     case( state )
         DECODE: 
             casez( IR )
-                8'b0???_1010:           load_c_alu = 1;         // shift A
+                8'b0??0_1010:           load_c_alu = 1;         // shift A
             endcase
 
         DATA:   

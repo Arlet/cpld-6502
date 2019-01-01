@@ -126,10 +126,19 @@ assign SB = ~SB_DIR  ? AI  : 8'hzz;
 
 /*
  * select ALU AI input
+ * 
+ * The SEL_0 input is mostly needed to send 00 out on 
+ * SB for zero offset addresses (e.g. ZP), the ALU 
+ * output is not used in that case.
+ *
+ * However, when op_ld[0] is set, this implies we are 
+ * interested in the ALU output, which will be equal
+ * to A+1 or A-1 depending on carry input.
  */
 always @*
     case( sel )
-        SEL_0  :                        AI = 0;
+        SEL_0  : if( op_ld[0] & ~CI )   AI = 8'hff;             // A-1
+                 else                   AI = 0;                 // SB=0 or A+1
         SEL_MEM:                        AI = M;
         SEL_CMP:                        AI = A;
         SEL_ADD:                        AI = A;
@@ -144,7 +153,8 @@ always @*
  */
 always @*
     case( sel )
-        SEL_0,                          // SEL_0 is don't care for BI. 
+        SEL_0:                          BI = A;                 // for DEC/INC A
+
         SEL_CMP,
         SEL_CPX,
         SEL_CPY:                        BI = ~M;
