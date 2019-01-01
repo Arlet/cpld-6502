@@ -8,17 +8,17 @@ This version consists of 4 separate modules, each designed to run in a single XC
 
 The 4 parts are:
 
-##CTL## 
+##CTL
 The control unit. This module contains the instruction decoding, flags, and control signals for the other 3 modules.  It is connected to the general data bus (DB).
 
-##ALU##
+##ALU
 The ALU, including the A, X and Y registers. It receives control
 information from the CTL module, and sends back the flag status.
 It is connected to the data bus (DB) as well as through the special bus (SB) 
 to the ABL module. The SB is bidirectional. In most cases, data flows
 from ALU to ABL sending X, Y index registers or memory byte.
 
-##ABL##
+##ABL
 The module that is responsible for generating the low 8 bits of the address bus.
 It also contains the stack pointer. It communicates with ALU over the Special
 Bus, receiving X/Y values for offset calculation, or sending stack pointer 
@@ -28,7 +28,7 @@ updates. It is connected to data bus (DB), lower part of address bus (ABL), and
 SB, leaving only a few pins for control and status. It sends 2 carry signals 
 (one for address, one for program counter) to ABH.
 
-#ABH##
+##ABH
 The module that is responsible for generation high 8 bits of the address bus. 
 Because this module needs the fewest pins and resources, it can also do some 
 board specific work as clock divider and chip select (and maybe some I/O).
