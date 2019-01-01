@@ -161,6 +161,8 @@ always @* begin
             casez( IR )
                 8'b10?1_??10:           alu_sel = SEL_CPY;      // A,Y (Y     -> S)
                 8'b???1_?0??:           alu_sel = SEL_CPY;      // (Y) (Y     -> S)
+                8'b0111_1100: if( ind ) alu_sel = SEL_CPX;      // A,X (X     -> S)
+                              else      alu_sel = SEL_0;        // A   (0     -> S)
                 8'b???1_?1??:           alu_sel = SEL_CPX;      // A,X (X     -> S)
             endcase
 
