@@ -46,4 +46,9 @@ of the dead cycles were removed.
 - no penalty for page boundary crossing.
 - JSR takes 5 cycles, RTS takes 4.
 
+### Test board
+
+Here's picture of a board that I made to test the design on real hardware.
+![Test board](http://ladybug.xs4all.nl/arlet/6502/CPLD-6502.JPG]
+
 Have fun. 
