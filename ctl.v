@@ -118,7 +118,7 @@ always @(posedge clk)
         if( state == DECODE )
             casez( IR )
                 8'b??0?_0000:           ind <= 1;               // BRK
-                8'b0110_??00:           ind <= 1;               // JMP (a)
+                8'b011?_??00:           ind <= 1;               // JMP (a) and JMP (a,x)
                 default:                ind <= 0;
             endcase
         else if( state == IND0 )        ind <= 0;               // prevent multiple indirections
@@ -144,6 +144,11 @@ always @* begin
     alu_sel = SEL_0;
     case( state )
         BRA0:                           alu_sel = SEL_MEM;      // BRA (M     -> S)
+
+        IND0:
+            casez( IR )
+                8'b???1_????:           alu_sel = SEL_CPX;      // JMP (IND,X)
+            endcase
 
         STK0:
             casez( IR )                 

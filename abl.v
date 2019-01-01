@@ -142,6 +142,7 @@ always @(posedge clk)
 always @(*)
     case( op )
         AB_ABS0   :                     use_sb = 1; 
+        AB_JMP0   :                     use_sb = 1;
         AB_BRA0   :                     use_sb = 1;
         AB_INDX0  :                     use_sb = 1;
         AB_INDX1  :                     use_sb = 1;
