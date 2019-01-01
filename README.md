@@ -39,6 +39,13 @@ board specific work as clock divider and chip select (and maybe some I/O).
 The cpu.v module shows the interconnections. This project also includes an IO module with very
 simple UART and SPI peripheral that may be useful.
 
+### DB (data bus)
+The data bus is attached to all 4 modules. It is only used for reading/writing memory. Each of the four units can
+access the data bus for both reading and writing. Both the ABL and ABH monitor the DB to pick up address values, 
+the CTL unit reads DB for instructions, and the ALU reads DB for any operation involving memory operands. Each unit can 
+also write the bus: the ABH/ABL modules write the upper and lower part of the PC to the stack during JSR/BRK, the ALU 
+writes registers to memory, and the CTL module writes the flags to the stack.
+
 ### Cycle counts
 For purpose of minimizing design, I did not keep the original cycle count. Instead, some
 of the dead cycles were removed.
