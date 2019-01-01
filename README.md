@@ -9,14 +9,17 @@ This version consists of 4 separate modules, each designed to run in a single XC
 The 4 parts are:
 
 ## CTL
-The control unit. This module contains the instruction decoding, flags, and control signals for the other 3 modules.  It is connected to the general data bus (DB).
+The control unit. This module contains the instruction decoding, flags, and control signals for the other 3 modules.  It is connected to the general data bus (DB). 
+It sends a 5-bit control signal (AB_OP) to both ABL and ABH modules, as well as three 3-bit control signals to the ALU. The control unit also does the reset and 
+interrupt handling.
 
 ## ALU
 The ALU, including the A, X and Y registers. It receives control
 information from the CTL module, and sends back the flag status.
 It is connected to the data bus (DB) as well as through the special bus (SB) 
 to the ABL module. The SB is bidirectional. In most cases, data flows
-from ALU to ABL sending X, Y index registers or memory byte.
+from ALU to ABL sending X, Y index registers or memory byte, but flow is reversed
+to get access to stack pointer for TSX instruction.
 
 ## ABL
 The module that is responsible for generating the low 8 bits of the address bus.
@@ -36,7 +39,8 @@ board specific work as clock divider and chip select (and maybe some I/O).
 The cpu.v module shows the interconnections. This project also includes an IO module with very
 simple UART and SPI peripheral that may be useful.
 
-*Note*: for purpose of minimizing design, I did not keep the original cycle count. Instead, some
+### Cycle counts
+For purpose of minimizing design, I did not keep the original cycle count. Instead, some
 of the dead cycles were removed.
 
 - implied instructions only take a single cycle (except for PHx/PLx which take 3). 
@@ -45,6 +49,9 @@ of the dead cycles were removed.
 - DEC ZP takes 4 cycles, as does DEC ZP,X. DEC ABS takes 5 cycles.
 - no penalty for page boundary crossing.
 - JSR takes 5 cycles, RTS takes 4.
+
+In fact, the only redundant cycles are in the implied single byte push/pull instructions (PHA/PLA and friends). 
+These instructions fetch the next opcode, perform the stack access, and then fetch next opcode again.
 
 ### Test board
 
