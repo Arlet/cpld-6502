@@ -49,6 +49,6 @@ of the dead cycles were removed.
 ### Test board
 
 Here's picture of a board that I made to test the design on real hardware.
-![Test board](http://ladybug.xs4all.nl/arlet/6502/CPLD-6502.JPG]
+![Test board](http://ladybug.xs4all.nl/arlet/6502/CPLD-6502.JPG)
 
 Have fun. 
