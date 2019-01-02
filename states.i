@@ -47,7 +47,7 @@ parameter
     AB_ZPXY   = 5'b01000,
     AB_BRK2   = 5'b01011,
     AB_RST    = 5'b01110,
-    AB_NMI    = 5'b01110,
+    AB_NMI    = 5'b01101,
 
     AB_FETCH  = 5'b10000,
     AB_IRQ0   = 5'b10001,
