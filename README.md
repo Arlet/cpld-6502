@@ -4,7 +4,7 @@ and also a few 65C02 instructions (BRA/PHX/PHY/PLX/PLY)
 
 This version consists of 4 separate modules, each designed to run in a single XC9572XL CPLD.
 
-![Block Diagram](http://ladybug.xs4all.nl/arlet/6502/cpld-block-diagram.png)
+![Block Diagram](http://c-scape.nl/arlet/6502/cpld-block-diagram.png)
 
 The 4 parts are:
 
@@ -63,6 +63,6 @@ These instructions fetch the next opcode, perform the stack access, and then fet
 ### Test board
 
 Here's picture of a board that I made to test the design on real hardware.
-![Test board](http://ladybug.xs4all.nl/arlet/6502/CPLD-6502.JPG)
+![Test board](http://c-scape.nl/arlet/6502/CPLD-6502.JPG)
 
 Have fun. 
